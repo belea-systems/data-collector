@@ -42,7 +42,7 @@ public class AnalyticsControllerTest {
         final GetAnalyticsRequestDto getAnalyticsRequestDto = new GetAnalyticsRequestDto(
                 Instant.parse("2024-02-02T12:20:20Z"),
                 Instant.parse("2025-02-02T12:20:20Z"),
-                AnalyticsPrecision.MONTHS, new HazardLevel[]{HazardLevel.SEVERE}
+                AnalyticsPrecision.MONTHS
         );
 
         final AnalyticsReport report = new AnalyticsReport(
@@ -55,7 +55,7 @@ public class AnalyticsControllerTest {
         );
 
         Mockito.when(analyticsService.getReport(
-                getAnalyticsRequestDto.from(), getAnalyticsRequestDto.to(), getAnalyticsRequestDto.precision(), getAnalyticsRequestDto.types())
+                getAnalyticsRequestDto.from(), getAnalyticsRequestDto.to(), getAnalyticsRequestDto.precision())
         ).thenReturn(report);
 
         final MvcTestResult mvcTestResult = mockMvcTester.get().uri("/analytics/history")
@@ -78,7 +78,7 @@ public class AnalyticsControllerTest {
         final GetAnalyticsRequestDto getAnalyticsRequestDto = new GetAnalyticsRequestDto(
                 Instant.parse("2024-02-02T12:20:20Z"),
                 Instant.parse("2023-02-02T12:20:20Z"),
-                AnalyticsPrecision.MONTHS, new HazardLevel[]{HazardLevel.SEVERE}
+                AnalyticsPrecision.MONTHS
         );
 
         final MvcTestResult mvcTestResult = mockMvcTester.get().uri("/analytics/history")

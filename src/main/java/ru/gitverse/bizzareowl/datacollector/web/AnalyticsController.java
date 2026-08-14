@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.multipart.MultipartFile;
 import ru.gitverse.bizzareowl.datacollector.service.AnalyticsPrecision;
 import ru.gitverse.bizzareowl.datacollector.web.dto.AnalyticsReportDto;
+import ru.gitverse.bizzareowl.datacollector.web.dto.GetAnalyticsRequestDto;
 
 import java.time.Instant;
 
@@ -37,6 +38,8 @@ public interface AnalyticsController {
             description = "Позволяет получить аналитику по чрезвычайным сообщениям"
     )
     AnalyticsReportDto getAnalytics(
+            GetAnalyticsRequestDto getAnalyticsRequestDto
+            /*
             @Parameter(description = "Время начала периода аналитики")
             Instant from,
 
@@ -45,8 +48,11 @@ public interface AnalyticsController {
 
             @Parameter(description = "Точность аналитики")
             AnalyticsPrecision precision
+
+             */
     );
 
+    /*
     @Operation(
             summary = "Получение аналитики",
             description = "Позволяет получить аналитику в виде файлового отчета"
@@ -61,5 +67,6 @@ public interface AnalyticsController {
             @Parameter(description = "Точность аналитики")
             AnalyticsPrecision precision
     );
+     */
 
 }
