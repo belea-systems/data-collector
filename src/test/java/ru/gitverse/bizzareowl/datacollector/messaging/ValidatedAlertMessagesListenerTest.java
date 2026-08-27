@@ -24,18 +24,16 @@ import static org.mockito.Mockito.*;
 
 @ImportAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @SpringBootTest
-@EmbeddedKafka(topics = {
-        "${application.alert-messages-topic}",
-        "${application.non-enriched-alert-messages-topic}",
-        "${application.enriched-alert-messages-topic}"
-})
+@EmbeddedKafka(
+        partitions = 1,
+        topics = {
+                "${application.alert-messages-topic}",
+                "${application.enriched-alert-messages-topic}"
+        })
 public class ValidatedAlertMessagesListenerTest {
 
     @Value("${application.alert-messages-topic}")
     private String alertMessagesTopic;
-
-    @Value("${application.non-enriched-alert-messages-topic}")
-    private String nonEnrichedAlertMessagesTopic;
 
     @Value("${application.enriched-alert-messages-topic}")
     private String enrichedAlertMessagesTopic;
@@ -65,7 +63,7 @@ public class ValidatedAlertMessagesListenerTest {
     @DisplayName("Listen to non enriched should send to enrich")
     public void listen_withNonEnrichedAlertMessage_shouldProceedCorrectly() {
 
-        Consumer<UUID, NonEnrichedAlertMessage> consumer = consumerFactory.createConsumer();
+        Consumer<UUID, NonEnrichedAlertMessage> consumer = consumerFactory.createConsumer("sample-group", "client-suffix");
         embeddedKafka.consumeFromAnEmbeddedTopic(consumer, alertMessagesTopic);
 
         NonEnrichedAlertMessage nonEnrichedAlertMessage = NonEnrichedAlertMessagesMother.defaultMessage();
@@ -78,7 +76,7 @@ public class ValidatedAlertMessagesListenerTest {
     @DisplayName("Listen to enriched should enrich")
     public void listen_enrichedAlertMessageInformation_shouldEnrichMessage() {
 
-        Consumer<UUID, EnrichedAlertMessageInformation> consumer = consumerFactoryForEnrichedInformation.createConsumer();
+        Consumer<UUID, EnrichedAlertMessageInformation> consumer = consumerFactoryForEnrichedInformation.createConsumer("sample-group-another", "client-suffix");
         embeddedKafka.consumeFromAnEmbeddedTopic(consumer, enrichedAlertMessagesTopic);
 
         UUID uuid = UUID.randomUUID();

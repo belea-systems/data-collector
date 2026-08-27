@@ -1,8 +1,6 @@
 package ru.gitverse.bizzareowl.datacollector.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,27 +8,24 @@ import ru.gitverse.bizzareowl.datacollector.domain.EnrichedAlertMessage;
 import ru.gitverse.bizzareowl.datacollector.domain.EnrichedAlertMessageInformation;
 import ru.gitverse.bizzareowl.datacollector.domain.NonEnrichedAlertMessage;
 import ru.gitverse.bizzareowl.datacollector.domain.ToEnrichAlertMessageInformation;
+import ru.gitverse.bizzareowl.datacollector.messaging.ToEnrichSender;
 import ru.gitverse.bizzareowl.datacollector.persistence.AlertMessagesRepository;
 import ru.gitverse.bizzareowl.datacollector.persistence.EnrichedAlertMessageRepository;
 import ru.gitverse.bizzareowl.datacollector.persistence.NonEnrichedAlertMessagesRepository;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class AlertMessageService {
 
-    @Value("${non-enriched-alert-messages-topic}")
-    private String toEnrichTopic;
-
     private final NonEnrichedAlertMessagesRepository nonEnrichedAlertMessageRepository;
     private final EnrichedAlertMessageRepository enrichedAlertMessageRepository;
     private final AlertMessagesRepository alertMessagesRepository;
-
-    private final KafkaTemplate<UUID, ToEnrichAlertMessageInformation> kafkaTemplate;
+    private final ToEnrichSender toEnrichSender;
 
     @Transactional
     public void save(NonEnrichedAlertMessage nonEnrichedAlertMessage) {
@@ -49,9 +44,12 @@ public class AlertMessageService {
 
     @Scheduled(fixedDelayString = "${application.send-to-enrich-interval}", timeUnit = TimeUnit.SECONDS)
     public void sendToEnrich() {
-        alertMessagesRepository.getNonEnrichedToEnrich().forEach(message -> {
-            kafkaTemplate.send(toEnrichTopic, message.id(), new ToEnrichAlertMessageInformation(message.id(), message.message()));
-        });
+        List<NonEnrichedAlertMessage> nonEnrichedAlertMessages = Objects.requireNonNull(alertMessagesRepository.getNonEnrichedToEnrich());
+        toEnrichSender.sendToEnrich(
+                nonEnrichedAlertMessages.stream()
+                        .map(m -> new ToEnrichAlertMessageInformation(m.id(), m.message()))
+                        .toList()
+        );
     }
 
 }
