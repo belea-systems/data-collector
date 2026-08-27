@@ -1,0 +1,30 @@
+application:
+  non-enriched-alert-messages-topic: non-enriched-alert-messages
+  enriched-alert-messages-topic: enriched-alert-messages
+  alert-messages-topic: alert-messages
+  
+  send-to-enrich-interval: 30
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  kafka:
+    bootstrap-servers:
+      - localhost:3456
+    consumer:
+      group-id: alert-messages-consumer-group
+      key-deserializer: org.springframework.kafka.support.serializer.ParseStringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: ru.gitverse.bizzareowl.*
+          message:
+            key:
+              parser: ru.gitverse.bizzareowl.datacollector.messaging.UUIDParserDeserializer.parseUUID
+    producer:
+      key-serializer: org.springframework.kafka.support.serializer.ToStringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+

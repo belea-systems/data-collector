@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+  - changeSet:
+      id: initial-setup
+      author: bizzare-owl
+      changes:
+        - createTable:
+            tableName: NonEnriched
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: messageId
+                  type: varchar(255)
+              - column:
+                  name: sentAt
+                  type: timestamp
+              - column:
+                  name: sourceId
+                  type: varchar(255)
+              - column:
+                  name: sourceName
+                  type: varchar(255)
+              - column:
+                  name: source
+                  type: varchar(255)
+              - column:
+                  name: message
+                  type: varchar(2048)
+        - createTable:
+            tableName: Enriched
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: messageId
+                  type: varchar(255)
+              - column:
+                  name: sentAt
+                  type: timestamp
+              - column:
+                  name: sourceId
+                  type: varchar(255)
+              - column:
+                  name: sourceName
+                  type: varchar(255)
+              - column:
+                  name: source
+                  type: varchar(255)
+              - column:
+                  name: message
+                  type: varchar(2048)
+              - column:
+                  name: hazardLevel
+                  type: varchar(255)
+              - column:
+                  name: hazardType
+                  type: varchar(255)
+        - createTable:
+            tableName: MessageLocations
+            columns:
+              - column:
+                  name: messageId
+                  type: UUID
+                  constraints:
+                    unique: true
+              - column:
+                  name: location
+                  type: varchar(255)
+        - addPrimaryKey:
+            columnNames: messageId, location
+            tableName: MessageLocations
+            constraintName: messageLocations_pk
+
