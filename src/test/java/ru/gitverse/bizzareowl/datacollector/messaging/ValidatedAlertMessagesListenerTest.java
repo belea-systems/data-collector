@@ -66,7 +66,7 @@ public class ValidatedAlertMessagesListenerTest {
         Consumer<UUID, NonEnrichedAlertMessage> consumer = consumerFactory.createConsumer("sample-group", "client-suffix");
         embeddedKafka.consumeFromAnEmbeddedTopic(consumer, alertMessagesTopic);
 
-        NonEnrichedAlertMessage nonEnrichedAlertMessage = NonEnrichedAlertMessagesMother.defaultMessage();
+        NonEnrichedAlertMessage nonEnrichedAlertMessage = AlertMessagesMother.defaultNonEnriched();
         kafkaTemplate.send(alertMessagesTopic, nonEnrichedAlertMessage.id(), nonEnrichedAlertMessage);
 
         verify(alertMessageService, atMostOnce()).save(nonEnrichedAlertMessage);
