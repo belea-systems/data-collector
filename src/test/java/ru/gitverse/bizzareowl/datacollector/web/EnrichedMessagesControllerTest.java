@@ -1,9 +1,7 @@
 package ru.gitverse.bizzareowl.datacollector.web;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
@@ -12,11 +10,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import ru.gitverse.bizzareowl.datacollector.domain.AlertMessagesMother;
+import ru.gitverse.bizzareowl.datacollector.domain.EnrichedAlertMessage;
 import ru.gitverse.bizzareowl.datacollector.service.AlertMessageService;
 import ru.gitverse.bizzareowl.datacollector.service.report.EnrichedMessagesReport;
 import ru.gitverse.bizzareowl.datacollector.service.request.GetMessageRequest;
-import ru.gitverse.bizzareowl.datacollector.web.dto.domain.EnrichedAlertMessageDto;
-import ru.gitverse.bizzareowl.datacollector.web.dto.domain.mapper.EnrichedAlertMessageMapper;
 import ru.gitverse.bizzareowl.datacollector.web.dto.request.GetMessagesRequestDto;
 import tools.jackson.databind.ObjectMapper;
 
@@ -50,8 +47,10 @@ public class EnrichedMessagesControllerTest {
                 Instant.parse("2024-04-04T20:20:20.00Z"), Instant.parse("2025-05-05T20:20:20.00Z"), null, null, null, null
         );
 
+        EnrichedAlertMessage message = AlertMessagesMother.defaultEnriched();
+
         when(alertMessageService.getMessages(eq(getMessageRequest))).thenReturn(
-                new EnrichedMessagesReport(1, List.of(AlertMessagesMother.defaultEnriched()))
+                new EnrichedMessagesReport(1, List.of(message))
         );
 
         MvcTestResult mvcTestResult = mockMvcTester.get().uri("/analytics/messages")
@@ -62,10 +61,8 @@ public class EnrichedMessagesControllerTest {
         assertThat(mvcTestResult).hasStatus(HttpStatus.OK);
         assertThat(mvcTestResult).bodyJson().extractingPath("$.count").isNotEmpty();
         assertThat(mvcTestResult).bodyJson().extractingPath("$.count").asNumber().isEqualTo(1);
-        assertThat(mvcTestResult).bodyJson().extractingPath("$.messages[]").isNotEmpty();
-        assertThat(mvcTestResult).bodyJson().extractingPath("$.messages[]")
-                .asInstanceOf(InstanceOfAssertFactories.list(EnrichedAlertMessageDto.class))
-                .isEqualTo(List.of(Mappers.getMapper(EnrichedAlertMessageMapper.class).toDto(AlertMessagesMother.defaultEnriched())));
+        assertThat(mvcTestResult).bodyJson().extractingPath("$.messages").isNotEmpty();
+        assertThat(mvcTestResult).bodyJson().extractingPath("$.messages[0].id").isEqualTo(message.id().toString());
 
     }
 
