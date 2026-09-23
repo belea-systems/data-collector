@@ -13,7 +13,11 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import ru.gitverse.bizzareowl.datacollector.domain.AlertMessagesMother;
 import ru.gitverse.bizzareowl.datacollector.service.AlertMessageService;
+import ru.gitverse.bizzareowl.datacollector.service.report.EnrichedMessagesReport;
 import ru.gitverse.bizzareowl.datacollector.service.request.GetMessageRequest;
+import ru.gitverse.bizzareowl.datacollector.web.dto.domain.EnrichedAlertMessageDto;
+import ru.gitverse.bizzareowl.datacollector.web.dto.domain.mapper.EnrichedAlertMessageMapper;
+import ru.gitverse.bizzareowl.datacollector.web.dto.request.GetMessagesRequestDto;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
@@ -61,7 +65,7 @@ public class EnrichedMessagesControllerTest {
         assertThat(mvcTestResult).bodyJson().extractingPath("$.messages[]").isNotEmpty();
         assertThat(mvcTestResult).bodyJson().extractingPath("$.messages[]")
                 .asInstanceOf(InstanceOfAssertFactories.list(EnrichedAlertMessageDto.class))
-                .isEqualTo(List.of(Mappers.getMapper(EnrichedAlertMessageMapper.class).toDto()));
+                .isEqualTo(List.of(Mappers.getMapper(EnrichedAlertMessageMapper.class).toDto(AlertMessagesMother.defaultEnriched())));
 
     }
 

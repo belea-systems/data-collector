@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.gitverse.bizzareowl.datacollector.domain.EnrichedAlertMessage;
-import ru.gitverse.bizzareowl.datacollector.domain.EnrichedAlertMessageInformation;
-import ru.gitverse.bizzareowl.datacollector.domain.NonEnrichedAlertMessage;
-import ru.gitverse.bizzareowl.datacollector.domain.ToEnrichAlertMessageInformation;
+import ru.gitverse.bizzareowl.datacollector.domain.*;
 import ru.gitverse.bizzareowl.datacollector.messaging.ToEnrichSender;
 import ru.gitverse.bizzareowl.datacollector.persistence.AlertMessagesRepository;
 import ru.gitverse.bizzareowl.datacollector.persistence.EnrichedAlertMessageRepository;
 import ru.gitverse.bizzareowl.datacollector.persistence.NonEnrichedAlertMessagesRepository;
+import ru.gitverse.bizzareowl.datacollector.service.report.EnrichedMessagesReport;
+import ru.gitverse.bizzareowl.datacollector.service.request.GetMessageRequest;
 
 import java.util.List;
 import java.util.Objects;
@@ -52,4 +51,8 @@ public class AlertMessageService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public EnrichedMessagesReport getMessages(GetMessageRequest getMessageRequest) {
+        return null;
+    }
 }
