@@ -1,7 +1,7 @@
 package ru.gitverse.bizzareowl.datacollector.web.dto.report;
 
 import lombok.Data;
-import ru.gitverse.bizzareowl.datacollector.domain.EnrichedAlertMessageDto;
+import ru.gitverse.bizzareowl.datacollector.web.dto.domain.EnrichedAlertMessageDto;
 
 import java.util.List;
 
